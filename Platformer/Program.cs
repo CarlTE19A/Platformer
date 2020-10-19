@@ -7,26 +7,44 @@ namespace Platformer
     {
         static void Main(string[] args)
         {
-            Raylib.InitWindow(600,600, "Platformer");
+            int width = 600;
+            int height = 600;
             int size = 20;
-            int playerY = 300-size/2;
+            int playerX = width/2-size/2;
+            int playerY = height/2-size/2;
             int worldX = 0;
             int worldY = 0;
+            Raylib.InitWindow(width,height, "Platformer");
             while(Raylib.WindowShouldClose() !=  true) //Reapeats every Frame
             {
-                if(Raylib.IsKeyDown(KeyboardKey.KEY_A) ||Raylib.IsKeyDown(KeyboardKey.KEY_LEFT))
+                if(Raylib.IsKeyDown(KeyboardKey.KEY_A) || Raylib.IsKeyDown(KeyboardKey.KEY_LEFT))
                 {
-                    worldX--;   
+                    if(width/2 - 100 < playerX)
+                    {
+                        playerX--;
+                    }
+                    else
+                    {
+                        worldX--;
+                    }
                 }
-                if(Raylib.IsKeyDown(KeyboardKey.KEY_D) ||Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT))
+                if(Raylib.IsKeyDown(KeyboardKey.KEY_D) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT))
                 {
-                    worldX++;   
+                    if(width/2 + 100 > playerX)
+                    {
+                        playerX++;
+                    }
+                    else
+                    {
+                        worldX++;
+                    }
                 }
+                
 
                 //Graphics
                 Raylib.BeginDrawing(); //Begin Draw
                 Raylib.ClearBackground(Color.BLACK); //Background
-                Raylib.DrawRectangle(300-size,playerY,size,size,Color.GREEN); //Player
+                Raylib.DrawRectangle(playerX, playerY, size, size, Color.GREEN); //Player
                 Raylib.DrawRectangle(worldX + 50, worldY + 400,500,25, Color.WHITE);
                 
 
