@@ -2,8 +2,8 @@ Structure of map files:
 Every map will have a personal file
 In each file there will be:
 
-"file"/checkpoint.txt
-"file"/platform.txt
+maps/"file"/checkpoint.txt
+maps/"file"/platform.txt
 
 Each object should be made by the form
 X, Y, Width, Height
@@ -15,3 +15,11 @@ Ex.
 
 The first checkpoint should be the starting point
 
+
+Features that can look like bugs:
+Can dubble jump if quick and dident do it in cayote jump - Should maybe be changed
+
+
+
+Ideer
+Blood splatter where you died
