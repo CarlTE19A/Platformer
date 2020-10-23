@@ -24,3 +24,8 @@ Can dubble jump if quick and dident do it in cayote jump - Should maybe be chang
 
 Ideer
 Blood splatter where you died
+
+Behöver:
+Ta text från filer och få spelet att göra kartan
+Savefiles?
+Välja Level (med egna levels automatiskt)
