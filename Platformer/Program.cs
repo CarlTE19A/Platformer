@@ -10,6 +10,7 @@ namespace Platformer
         static void Main(string[] args)
         {
         //World Rules
+            bool open = true;
             int width = 600;                        //Width of the window
             int height = 600;                       //Height of the window
             int worldX = 0;                         //Where the world 0 is - X axis
@@ -56,33 +57,59 @@ namespace Platformer
             string fileName = "";
             int fileCreationStep = 0;
 
+        //Map creation
+            int mapCreationStep = 0;
+
+        //Checkpoint creation
+            string checkpointString = "";
+            Color checkpointColor = new Color(0,255,0,130);
+
             Raylib.InitWindow(width,height, "Platformer");  //Creates Window
             Raylib.SetTargetFPS(60);                        //Target Framerate          
             Raylib.SetExitKey(0);
 
-            while(Raylib.WindowShouldClose() !=  true)      //Reapeats every Frame, The Game
+            while(!Raylib.WindowShouldClose() && open == true)      //Reapeats every Frame, The Game
             {
-                if(gameState == 0)  //Main Menu
+                if(gameState == 0)      //Main Menu
                 {
                     menu();
                 }
                 
-                else if(gameState == 1)  //Game
+                else if(gameState == 1) //Game
                 {
                    game(); 
                 }
-                else if(gameState == 2)  //Death
+                
+                else if(gameState == 2) //Death
                 {
                     death();
                 }
-                else if(gameState == 3) //Create Map
+                
+                else if(gameState == 3) //Create Map File
                 {
-                    create();
+                    fileCreate();
                 }
+                
+                else if(gameState == 4) //Make Level
+                {
+                    mapCreate();
+                }
+                
+                else if(gameState == 5) //Choose Map Not Implemented
+                {
+
+                }
+
                 else
                 {
                     gameState = 0;
                 }
+                
+                if(Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE) && gameState != 3 && gameState != 4)
+                {
+                    gameState = 0;
+                }
+
             }
 
             void menu()         //Gamestate 0
@@ -124,6 +151,10 @@ namespace Platformer
                 Raylib.DrawRectangle(20, 270, 200, 50, but2ColBack);
                 Raylib.DrawRectangle(20, 340, 200, 50, but3ColBack);
                 Raylib.EndDrawing();                                                //End Draw
+                if(Raylib.IsKeyPressed(KeyboardKey.KEY_ESCAPE) && gameState == 0)
+                {
+                    open = false;
+                }
             }
 
 
@@ -243,18 +274,25 @@ namespace Platformer
             }
 
 
-            void death()        //Gamestate 2
+            void death()            //Gamestate 2
             {
+                if(Raylib.IsKeyPressed(KeyboardKey.KEY_R))
+                {
+                    worldX = 0;
+                    worldY = 0;
+                    playerX = 300;
+                    playerY = 300; 
+                    gameState = 1;
+                }
                 //Graphics
                 Raylib.BeginDrawing();                                              //Begin Draw
                 Raylib.ClearBackground(Color.BLACK);                                //Background
                 Raylib.DrawText("You Died", width/2-90, height/2-20,40,Color.RED);  //Death Text
-                //Raylib.DrawText("Press [R] to restart", width/2-210, height/2+60,40,Color.RED);
+                Raylib.DrawText("Press [R] to restart", width/2-210, height/2+60,40,Color.RED);
                 Raylib.EndDrawing();                                                //End Draw                
             }
-        
 
-            void create()       //Gamestate 3
+            void fileCreate()       //Gamestate 3
             {
                 if(fileCreationStep == 0)
                 {
@@ -275,20 +313,67 @@ namespace Platformer
                 if(fileCreationStep == 1)
                 {
                     Directory.CreateDirectory(@"maps\" + fileName);
-                    File.Create(@"maps\" + fileName + @"\platforms");
+                    File.Create(@"maps\" + fileName + @"\platform.txt").Close();
+                    System.Console.WriteLine("File Created: " + fileName + @"\platform.txt");
+                    File.Create(@"maps\" + fileName + @"\checkpoint.txt").Close();
+                    System.Console.WriteLine("File Created: " + fileName + @"\checkpoint.txt");
+                    File.Create(@"maps\" + fileName + @"\coin.txt").Close();
+                    System.Console.WriteLine("File Created: " + fileName + @"\coin.txt");
+                    
                     fileCreationStep = 2;
                 }
                 if(fileCreationStep == 2)
                 {
-                   Raylib.BeginDrawing();
+                    Raylib.BeginDrawing();
                     Raylib.ClearBackground(Color.BLACK);
                     Raylib.DrawText("New File Created", 10, 10, 20, Color.WHITE);
-                    Raylib.EndDrawing();  
+                    Raylib.EndDrawing();
+                    gameState = 4;
                 }
 
                 
             }
 
+            void mapCreate()        //Gamestate 4
+            {
+
+                    if(Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+                    {
+                        if(mapCreationStep == 0)
+                        {
+                            checkpointString = (Raylib.GetMouseX() + worldX).ToString();
+                            checkpointString += ", " + (Raylib.GetMouseY() + worldY).ToString();
+                        }
+                        if(mapCreationStep == 1)
+                        {
+                            checkpointString += Environment.NewLine;
+                            checkpointString += (Raylib.GetMouseX() + worldX).ToString();
+                            checkpointString += ", " + (Raylib.GetMouseY() + worldY).ToString();
+                        }
+                        mapCreationStep = 1;
+                    }
+                    if(Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER) && mapCreationStep == 1)
+                    {
+                        File.WriteAllText(@"maps\" + fileName + @"\checkpoint.txt", checkpointString);
+                        mapCreationStep = 2;
+                    }
+
+                    Raylib.BeginDrawing();
+                    Raylib.ClearBackground(Color.BLACK);
+                    if(mapCreationStep == 0)
+                    {
+                        Raylib.DrawText("Choose a place for player spawn", 10, 10, 20, Color.WHITE);
+                    }
+                    if(mapCreationStep == 1)
+                    {
+                        Raylib.DrawText("Choose a place for the next Checkpoint", 10, 10, 20, Color.WHITE);
+                    }
+                    if(mapCreationStep == 2)
+                    {
+                        Raylib.DrawText("Choose a place for the first platform", 10, 10, 20, Color.WHITE);
+                    }
+                    Raylib.EndDrawing();
+            }
             
             void keyBoard()     //When the Player should write text
             {

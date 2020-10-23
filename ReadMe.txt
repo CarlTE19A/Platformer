@@ -4,6 +4,7 @@ In each file there will be:
 
 maps/"file"/checkpoint.txt
 maps/"file"/platform.txt
+maps/"file"/coin.txt
 
 Each object should be made by the form
 X, Y, Width, Height
