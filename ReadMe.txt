@@ -29,3 +29,8 @@ Behöver:
 Ta text från filer och få spelet att göra kartan
 Savefiles?
 Välja Level (med egna levels automatiskt)
+
+MÅL JUST NU:
+Få filerna att delas i korekta string[]
+för att göra till int[]
+4D Array?

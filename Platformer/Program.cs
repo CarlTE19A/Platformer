@@ -82,6 +82,15 @@ namespace Platformer
             Color coinColor = new Color(0,255,0,130);
             List<int> buildingCoinX = new List<int>();
             List<int> buildingCoinY = new List<int>();
+
+        //Load
+            int loadStep = 0;
+            int loadButWidth = 400;
+            int loadButHight = 100;
+            int loadY = 0;
+            string[] existingDirectories = Directory.GetDirectories(@"maps");
+            Color[] mapColBack = new Color[existingDirectories.Length];
+            Color[] mapColFront = new Color[existingDirectories.Length];
         //
             Raylib.InitWindow(width,height, "Platformer");  //Creates Window
             Raylib.SetTargetFPS(60);                        //Target Framerate          
@@ -113,9 +122,9 @@ namespace Platformer
                     mapCreate();
                 }
                 
-                else if(gameState == 5) //Choose Map Not Implemented
+                else if(gameState == 5) //Choose Map
                 {
-
+                    mapLoad();
                 }
 
                 else
@@ -165,7 +174,7 @@ namespace Platformer
                 }
                 if((mouseX > 20 && mouseX < 320) && (mouseY > 340 && mouseY < 390) && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON) == true)
                 {
-                    gameState = 0;
+                    gameState = 5;
                 }
                 //Graphics
                 Raylib.BeginDrawing();                                              //Begin Draw
@@ -346,6 +355,7 @@ namespace Platformer
                     System.Console.WriteLine("File Created: " + fileName + @"\checkPoint.txt");
                     File.Create(@"maps\" + fileName + @"\coin.txt").Close();
                     System.Console.WriteLine("File Created: " + fileName + @"\coin.txt");
+
                     
                     fileCreationStep = 2;
                 }
@@ -366,10 +376,10 @@ namespace Platformer
 
                     if(Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
                     {
-                        if(mapCreationStep == 5)    //checkPoints
+                        if(mapCreationStep == 5)    //Coins
                         {
                             coinString += (Raylib.GetMouseX() - worldX).ToString();
-                            coinString += ", " + (Raylib.GetMouseY() - worldY).ToString();
+                            coinString += "," + (Raylib.GetMouseY() - worldY).ToString();
                             buildingCoinX.Add(Raylib.GetMouseX() - worldX - coinSize/2);
                             buildingCoinY.Add(Raylib.GetMouseY() - worldY - coinSize/2);
                             coinString += Environment.NewLine;
@@ -377,7 +387,7 @@ namespace Platformer
                         if(mapCreationStep == 2)    //X, Y for platform
                         {
                             platformString += (Raylib.GetMouseX() + worldX).ToString();
-                            platformString += ", " + (Raylib.GetMouseY() + worldY).ToString();
+                            platformString += "," + (Raylib.GetMouseY() + worldY).ToString();
                             buildingPlatformX.Add(Raylib.GetMouseX() - worldX);
                             buildingPlatformY.Add(Raylib.GetMouseY() - worldY);
                             currentPlatformX = Raylib.GetMouseX() - worldX;
@@ -396,8 +406,8 @@ namespace Platformer
                             {
                                 currentPlatformH = currentPlatformH*-1;
                             }
-                            platformString += ", " + (currentPlatformW).ToString();
-                            platformString += ", " + (currentPlatformH).ToString();
+                            platformString += "," + (currentPlatformW).ToString();
+                            platformString += "," + (currentPlatformH).ToString();
                             buildingPlatformWidth.Add(currentPlatformW);
                             buildingPlatformHigth.Add(currentPlatformH);
                             platformString += Environment.NewLine;
@@ -407,7 +417,7 @@ namespace Platformer
                         {
                             checkPointString += Environment.NewLine;
                             checkPointString += (Raylib.GetMouseX() - worldX).ToString();
-                            checkPointString += ", " + (Raylib.GetMouseY() - worldY).ToString();
+                            checkPointString += "," + (Raylib.GetMouseY() - worldY).ToString();
                             buildingcheckPointX.Add(Raylib.GetMouseX() - worldX);
                             buildingcheckPointY.Add(Raylib.GetMouseY() - worldY);
                         }
@@ -415,7 +425,7 @@ namespace Platformer
                         {
                             System.Console.WriteLine("ACTIVE FILE = " + fileName);
                             checkPointString = (Raylib.GetMouseX() - worldX).ToString();
-                            checkPointString += ", " + (Raylib.GetMouseY() - worldY).ToString();
+                            checkPointString += "," + (Raylib.GetMouseY() - worldY).ToString();
                             buildingcheckPointX.Add(Raylib.GetMouseX() - worldX - checkPointSize/2);
                             buildingcheckPointY.Add(Raylib.GetMouseY() - worldY - checkPointSize/2);
                             mapCreationStep = 1;
@@ -501,6 +511,68 @@ namespace Platformer
                     Raylib.EndDrawing();
             }
             
+            void mapLoad()          //Gamestate 5
+            {
+                if(loadStep == 0)
+                {
+                    loadY = 0;
+                    string[] existingDirectories = Directory.GetDirectories(@"maps");
+                    loadStep = 1;
+                }
+                else if(loadStep == 1)
+                {
+                    initialLoad();
+                }
+                else if(loadStep == 3)
+                {
+
+                }
+            }
+
+            void initialLoad()
+            {
+                if(existingDirectories.Length > 0){
+                    Raylib.BeginDrawing();                                              //Begin Draw
+                    Raylib.ClearBackground(Color.BLACK);                                //Background
+                    for(int i = 0; i < existingDirectories.Length; i++)
+                    {
+                        string directoryName = new DirectoryInfo(existingDirectories[i]).Name;
+                        mapColBack[i] = new Color(20, 20, 20 , 255);
+                        mapColFront[i] = new Color(255, 255, 255 , 255);
+
+                        if(Raylib.GetMouseX() > 20 && Raylib.GetMouseX() < 20 + loadButWidth && Raylib.GetMouseY() > 20 + i*20 + i*loadButHight && Raylib.GetMouseY() < 20 + i*20 + i*loadButHight + loadButHight)
+                        {
+                            mapColBack[i] = new Color(255, 255, 255, 255);
+                            mapColFront[i] = new Color(20, 20, 20 , 255);
+                        }
+                        if(Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+                        {
+                            if(Raylib.GetMouseX() > 20 && Raylib.GetMouseX() < 20 + loadButWidth && Raylib.GetMouseY() > 20 + i*20 + i*loadButHight && Raylib.GetMouseY() < 20 + i*20 + i*loadButHight + loadButHight)
+                            {
+                                char[] loadSeperator = {'\n'};
+                                string loadPlatform = File.ReadAllText(existingDirectories[i] + @"\platform.txt");
+                                string[] loadPlatformSplit = loadPlatform.Split(loadSeperator);
+                                
+                                for(int g = 0; g < loadPlatformSplit.Length; g++)
+                                {
+                                    System.Console.WriteLine(loadPlatformSplit[g]);
+                                }
+                                string[] loadCoin = File.ReadAllLines(existingDirectories[i] + @"\coin.txt");
+                                string[] loadCheckPoint = File.ReadAllLines(existingDirectories[i] + @"\checkPoint.txt");
+                            }
+                        }
+                        //Graphics
+                        Raylib.DrawRectangle(20, 20 + loadY + i*(loadButHight+20), loadButWidth, loadButHight, mapColBack[i]);
+                        Raylib.DrawText(directoryName, 30, 30 + i*20 + i*loadButHight, 30, mapColFront[i]);
+                    }
+                    Raylib.EndDrawing();
+                }
+                else{
+                    System.Console.WriteLine("No files found");
+                    gameState = 0;
+                }
+            }
+
             void keyBoard()     //When the Player should write text
             {
 
@@ -511,6 +583,7 @@ namespace Platformer
                         fileName += "a";
                     }
                 }
+
                 if(Raylib.IsKeyPressed(KeyboardKey.KEY_B))
                 {
                     if(fileCreation == true)
